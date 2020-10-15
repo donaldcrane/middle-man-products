@@ -43,6 +43,20 @@ app.use("/api", userRoutes);
 app.use("/api", reviewRoutes);
 app.use("/api", addressRoutes);
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: true,
+    message: "Welcome to MiddleMan API",
+  });
+});
+
+app.get("*", (req, res) => {
+  res.status(404).json({
+    status: 404,
+    message: "Sorry! Can not be found!",
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
