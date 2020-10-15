@@ -1,13 +1,10 @@
 const express = require("express");
 const logger = require("morgan");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 dotenv.config();
-
-const User = require("./models/user");
 
 const app = express();
 
