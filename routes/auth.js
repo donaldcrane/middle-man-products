@@ -3,6 +3,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middlewares/verify-token");
+const isAdmin = require("../middlewares/isAdmin")
 
 router.post("/auth/signup", async (req, res) => {
   const { email } = req.body;
@@ -19,14 +20,16 @@ router.post("/auth/signup", async (req, res) => {
 
   // Create a new User
   const user = new User({
-    name: req.body.name,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
     email: req.body.email,
     password: hashedPassword,
+    role: req.body.role,
   });
 
   try {
     const newUser = await user.save();
-    const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, {
+    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.TOKEN_SECRET, {
       expiresIn: 604800, // 1 week
     });
     res.json({
@@ -44,7 +47,7 @@ router.post("/auth/signup", async (req, res) => {
 });
 
 /* Profile Route */
-router.get("/auth/user", verifyToken, async (req, res) => {
+router.get("/auth/user", [verifyToken, isAdmin], async (req, res) => {
   try {
     let foundUser = await User.findOne({ _id: req.decoded._id });
     if (foundUser) {
@@ -105,7 +108,7 @@ router.post("/auth/login", async (req, res) => {
 
   // Create and assign token
   if (match) {
-    const token = jwt.sign(user.toJSON(), process.env.TOKEN_SECRET, {
+    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.TOKEN_SECRET, {
       expiresIn: 604800, // 1 week
     });
     res.header("authorization", token).status(201).json({

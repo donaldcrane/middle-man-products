@@ -29,17 +29,32 @@ router.post("/products", upload.single("photo"), async (req, res) => {
 
 router.get("/products", async (req, res) => {
   try {
-    let { title } = req.query;
+    let { title, page, limit } = req.query;
+    page = page < 1 ? 1 : page;
+    limit = 2;
     let search = title
       ? { title: { $regex: new RegExp(title), $options: "i" } }
       : {};
-    let products = await Product.find(search)
+
+    // get total documents in the Products collection
+    let count = await Product.countDocuments();
+    let totalPages = Math.ceil(count / limit);
+    page = page > totalPages ? totalPages : page;
+
+    let products = await Product.find(search, { __v: 0 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
       .populate("owner category")
       .populate("reviews", "rating")
       .exec();
+
+    // return response with products, total pages, and current page
     res.json({
       success: true,
       products,
+      totalPages: totalPages,
+      currentPage: page,
+      totalProducts: count,
     });
   } catch (error) {
     res.status(500).json({
