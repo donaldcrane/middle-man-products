@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Product = require("../models/product");
 const upload = require("../middlewares/upload-photo");
 
+
 router.post("/products", upload.single("photo"), async (req, res) => {
   try {
     let product = new Product();
@@ -28,14 +29,29 @@ router.post("/products", upload.single("photo"), async (req, res) => {
 });
 
 router.get("/products", async (req, res) => {
-  try {
-    let products = await Product.find()
+  try {   
+    const { title, page = 1, limit = 10 } = req.query;
+    let search = title
+    ? { title: { $regex: new RegExp(title), $options: "i" } }
+    : {};
+  
+    let products = await Product.find(search)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
       .populate("owner category")
       .populate("reviews", "rating")
       .exec();
+
+       // get total documents in the Products collection 
+    const count = await Product.countDocuments();
+
+       // return response with products, total pages, and current page
     res.json({
       success: true,
       products,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      totalProducts: count
     });
   } catch (error) {
     res.status(500).json({
