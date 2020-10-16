@@ -29,7 +29,11 @@ router.post("/products", upload.single("photo"), async (req, res) => {
 
 router.get("/products", async (req, res) => {
   try {
-    let products = await Product.find()
+    let { title } = req.query;
+    let search = title
+      ? { title: { $regex: new RegExp(title), $options: "i" } }
+      : {};
+    let products = await Product.find(search)
       .populate("owner category")
       .populate("reviews", "rating")
       .exec();

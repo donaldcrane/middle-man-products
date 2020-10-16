@@ -15,10 +15,7 @@ const ProductSchema = new Schema(
     description: String,
     photo: String,
     price: Number,
-    stockQuantity: {
-      type: Number,
-      default: 1,
-    },
+    stockQuantity: Number,
     //store the id of the newly created Review
     reviews: [
       {
