@@ -47,9 +47,64 @@ router.post("/auth/signup", async (req, res) => {
 });
 
 /* Profile Route */
-router.get("/auth/user", [verifyToken, isAdmin], async (req, res) => {
+router.get("/auth/user", verifyToken, async (req, res) => {
   try {
     let foundUser = await User.findOne({ _id: req.decoded._id });
+    if (foundUser) {
+      res.json({
+        success: true,
+        user: foundUser,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+/* Get all users */
+router.get("/auth/users", [verifyToken,isAdmin], async (req, res) => {
+  try {
+    let foundUser = await User.find();
+    if (foundUser) {
+      res.json({
+        success: true,
+        user: foundUser,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+/* Delete single users */
+router.delete("/auth/users/:id", async (req, res) => {
+  try {
+    let foundUser = await User.deleteOne({
+      _id: req.params.id,
+    });
+    if (foundUser) {
+      res.json({
+        success: true,
+        user: foundUser,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+/* Delete all users */
+router.delete("/auth/users", async (req, res) => {
+  try {
+    let foundUser = await User.deleteMany();
     if (foundUser) {
       res.json({
         success: true,
