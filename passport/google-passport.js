@@ -12,13 +12,15 @@ module.exports = function (passport) {
             callbackURL: process.env.GOOGLE_CALLBACK_URL,
             callbackURL: process.env.GOOGLE_CALLBACK_URL_HEROKU,
         },
-        (accessToken, refreshToken, profile, done) => {
+        async (accessToken, refreshToken, profile, done) => {
+          try {
             console.log("profile", profile);
-            User.findOne({ googleId: profile.id })
-              .then((user) => {
+          const user =  await User.findOne({ googleId: profile.id })
+             
                 if (user) {
                   done(null, user);
-                } else {
+                } 
+                else {
                     const newUser = new User({
                         googleId: profile.id,
                         displayName: profile.displayName,
@@ -30,11 +32,13 @@ module.exports = function (passport) {
                         password: profile.id,
                         role: 'User'
                       });
-                  newUser.save().then((userdetails) => {
+                 await newUser.save()
                     done(null, userdetails);
-                  });
                 }
-              })
+            
+          } catch (error) {
+            console.log("error", error);
+          }
               // .catch((err) => console.log("err",err));
         }
       )
