@@ -6,7 +6,7 @@ const verifyToken = require("../middlewares/verify-token");
 /* Get Cart */
 router.get("/cart", async (req, res) => {
 try {
-    let cart = await Cart.find({ __v: 0 })
+    let cart = await Cart.find()
     .populate({
         path: "items.productId",
     })
@@ -40,7 +40,7 @@ router.post("/cart", verifyToken, async (req, res) => {
       
       let cart = await Cart.findOne({ userId: req.decoded._id });
 
-      let productDetails = await Product.findById(productId, { __v: 0 });
+      let productDetails = await Product.findById(productId);
       if (!productDetails) {
           return res.status(500).json({
               status: false,
@@ -128,8 +128,7 @@ router.post("/cart", verifyToken, async (req, res) => {
         try {
           let deleteCart = await Cart.findOneAndDelete({
             _id: req.params.id,
-          },
-          { __v: 0 });
+          });
           if (deleteCart) {
             res.json({
               status: true,
