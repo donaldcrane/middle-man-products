@@ -4,7 +4,7 @@ const upload = require("../middlewares/upload-photo");
 
 router.post("/products", upload.single("photo"), async (req, res) => {
   try {
-    let product = new Product();
+    let product = new Product({ __v: 0 });
     product.categoryID = req.body.categoryID;
     product.ownerID = req.body.ownerID;
     product.title = req.body.title;
@@ -66,7 +66,7 @@ router.get("/products", async (req, res) => {
 
 router.get("/products/:id", async (req, res) => {
   try {
-    let product = await Product.findOne({ _id: req.params.id })
+    let product = await Product.findOne({ _id: req.params.id }, { __v: 0 })
       .populate("owner category")
       .populate("reviews", "rating")
       .exec();
