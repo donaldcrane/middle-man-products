@@ -1,7 +1,6 @@
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user")
-const passport = require("passport")
 const dotenv = require ("dotenv");
 dotenv.config();
 
@@ -10,8 +9,8 @@ module.exports = function (passport) {
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL:"https://middle-man-products.herokuapp.com/auth/google/callback",
-            // callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL_HEROKU,
         },
         (accessToken, refreshToken, profile, done) => {
             console.log("profile", profile);
@@ -32,13 +31,11 @@ module.exports = function (passport) {
                         role: 'User'
                       });
                   newUser.save().then((userdetails) => {
-                      console.log("details", userdetails);
                     done(null, userdetails);
                   });
                 }
               })
-              .catch((err) => console.log("err",err));
-  
+              // .catch((err) => console.log("err",err));
         }
       )
     );
