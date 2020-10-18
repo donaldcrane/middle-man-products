@@ -135,4 +135,32 @@ router.delete("/products/:id", upload.single("photo"), async (req, res) => {
   }
 });
 
+// Total price of each product in the database
+router.get("/totalprice/products", async (req, res) => {
+  try {
+  
+    let products = await Product.find({ __v: 0 })
+      console.log("products", products);
+    let result = products.reduce((acc, c) => {
+        console.log( acc );
+        console.log(c.title);
+      acc[c.title] = (acc[c.title] || 0) + c.price
+      return acc
+    }, {})
+    console.log("result count" ,result)
+
+    // return response with products, total pages, and current page
+    res.json({
+      success: true,
+      products,
+      totalPrice: result
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;
