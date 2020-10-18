@@ -8,9 +8,10 @@ router.get("/cart", async (req, res) => {
 try {
     let cart = await Cart.find()
     .populate({
-        path: "items.productID",
+        path: "items.productId",
     })
     .exec()
+  
     if (!cart) {
         return res.status(400).json({
             status: false,
