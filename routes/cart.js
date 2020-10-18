@@ -71,7 +71,7 @@ router.post("/cart", verifyToken, async (req, res) => {
             /* Check if quantity is greater than 0 then add item to items array */
             else if (quantity > 0) {
                 cart.items.push({
-                    productID: productID,
+                    productId: productId,
                     quantity: quantity,
                     price: productDetails.price,
                     total: parseInt(productDetails.price * quantity)
