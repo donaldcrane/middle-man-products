@@ -9,8 +9,8 @@ try {
     let cart = await Cart.find()
     .populate({
         path: "items.productId",
-        user: "userId"
     })
+    .populate("userId")
     .exec()
   
     if (!cart) {
