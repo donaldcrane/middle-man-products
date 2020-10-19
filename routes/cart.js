@@ -3,7 +3,7 @@ const Cart = require("../models/cart");
 const Product = require("../models/product");
 const verifyToken = require("../middlewares/verify-token");
 const { initializePayment, verifyPayment } = require('../helper/paystack');
-const _ = require('lodash');
+
 
 /* Get Cart */
 router.get("/cart", async (req, res) => {
@@ -144,6 +144,5 @@ router.post("/cart", verifyToken, async (req, res) => {
         }
       });
 
-     
-
+  
 module.exports = router;

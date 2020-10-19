@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const initializePayment = async (form) => {
+exports.initializePayment = async (form) => {
   const options = {
     url: 'https://api.paystack.co/transaction/initialize',
     headers: {
@@ -19,14 +19,15 @@ const initializePayment = async (form) => {
       reject(error);
     }
   });
-}
+};
 
 /**
+ * Verify all transactions before updating their status in the DB
  * @param {String} trxref The reference String to verify the transaction. It will be gotten after successfully
  * initializing a transaction.
  */
 
-const verifyPayment = async (ref) => {
+exports.verifyPayment = async (ref) => {
   const options = {
     url:
       'https://api.paystack.co/transaction/verify/' + encodeURIComponent(ref),
@@ -39,15 +40,10 @@ const verifyPayment = async (ref) => {
   };
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await axios.request(options);
+      const data = await axios.request(options);
       resolve(data);
     } catch (error) {
       reject(error);
     }
   });
-}
-
-module.exports = {
-  initializePayment,
-  verifyPayment
-}
+};
