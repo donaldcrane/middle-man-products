@@ -31,7 +31,7 @@ router.get("/products", async (req, res) => {
   try {
     let { title, page, limit } = req.query;
     page = page < 1 ? 1 : page;
-    limit = 2;
+    limit = 8;
     let search = title
       ? { title: { $regex: new RegExp(title), $options: "i" } }
       : {};
@@ -46,6 +46,8 @@ router.get("/products", async (req, res) => {
       .skip((page - 1) * limit)
       .populate("owner category")
       .populate("reviews", "rating")
+      .collation({locale: "en" })
+      .sort({"title": 1})
       .exec();
 
     // return response with products, total pages, and current page
