@@ -9,6 +9,7 @@ try {
     let cart = await Cart.find()
     .populate({
         path: "items.productId",
+        user: "userId"
     })
     .exec()
   
