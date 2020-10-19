@@ -10,7 +10,6 @@ try {
     .populate({
         path: "items.productId",
     })
-    .populate("userId")
     .exec()
   
     if (!cart) {
