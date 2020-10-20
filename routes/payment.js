@@ -69,7 +69,10 @@ router.post("/paystack/pay", async (req, res) => {
           console.log("payment status", payment_status);
     
           let { status, reference, amount, customer } = payment_status.data.data;
-          const { email } = customer;
+          let customerDetail = payment_status.data.data.customer
+          console.log("customer", customerDetail);
+          // customerDetail.email
+          const { email } = customerDetail;
     
           
         } catch (error) {
