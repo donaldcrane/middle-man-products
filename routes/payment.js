@@ -75,8 +75,9 @@ router.post("/paystack/pay", verifyToken, async (req, res) => {
         
           const { email } = customer;
           const user = await User.findOne({ email });
-          console.log("user email", user);
-            const { _id: userId } = user;
+
+          const { _id: userId } = user;
+          
           const payload = {
             userId,
             email,
