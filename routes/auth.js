@@ -29,7 +29,7 @@ router.post("/auth/signup", async (req, res) => {
 
   try {
     const newUser = await user.save();
-    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.TOKEN_SECRET, {
+    const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.TOKEN_SECRET, {
       expiresIn: 604800, // 1 week
     });
     res.json({
@@ -163,7 +163,7 @@ router.post("/auth/login", async (req, res) => {
 
   // Create and assign token
   if (match) {
-    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.TOKEN_SECRET, {
+    const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.TOKEN_SECRET, {
       expiresIn: 604800, // 1 week
     });
     res.header("authorization", token).status(201).json({

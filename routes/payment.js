@@ -1,10 +1,16 @@
 const router = require("express").Router();
 const Cart = require("../models/cart");
 const Product = require("../models/product");
+const User = require("../models/user");
+const History = require("../models/history");
 const verifyToken = require("../middlewares/verify-token");
 const { initializePayment, verifyPayment } = require('../helper/paystack');
 
-router.post("/paystack/pay", async (req, res) => {
+
+router.post("/paystack/pay", verifyToken, async (req, res) => {
+  console.log( req.decoded._id);
+  console.log( req.decoded);
+ 
     try {
       let { price, quantity, productId } = req.body;
 
@@ -12,7 +18,7 @@ router.post("/paystack/pay", async (req, res) => {
      
       const paystack_data = {
         amount: subTotal * 100,
-        email: "jerry.aaron45@gmail.com",
+        email: req.decoded.email,
         productId: productId
       };
     
@@ -31,7 +37,7 @@ router.post("/paystack/pay", async (req, res) => {
     ]
 
       const payload = {
-        userId: "5f8c42e84179f7001756b6e0",
+        userId: req.decoded._id,
         subTotal: subTotal,
         items,
         reference: response.data.reference,
@@ -69,14 +75,31 @@ router.post("/paystack/pay", async (req, res) => {
           console.log("payment status", payment_status);
     
           let { status, reference, amount, customer } = payment_status.data.data;
-          let customerDetail = payment_status.data.data.customer
-          console.log("customer", customerDetail);
-          // customerDetail.email
-          const { email } = customerDetail;
-    
-          
+        
+          const { email } = customer;
+          const user = await User.findOne({ email });
+          console.log("user email", user);
+            const { _id: userId } = user;
+          const payload = {
+            userId,
+            email,
+            status,
+            reference,
+            amount
+          }
+          const savePayment = new History(payload);
+        
+         const saved = await savePayment.save();
+         
+         return res.send({
+          saved,
+          message: 'Payment was made successfully',
+        });
         } catch (error) {
-          console.log('error', error);
+          res.status(500).json({
+            success: false,
+            message: error.message,
+          });
         }
    })
 

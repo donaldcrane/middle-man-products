@@ -61,6 +61,7 @@ const reviewRoutes = require("./routes/review");
 const addressRoutes = require("./routes/address");
 const cartRoutes = require("./routes/cart");
 const paymentRoutes = require("./routes/payment")
+const historyRoutes = require("./routes/history")
 
 app.use("/api", productRoutes);
 app.use("/api", categoryRoutes);
@@ -70,6 +71,7 @@ app.use("/api", reviewRoutes);
 app.use("/api", addressRoutes);
 app.use("/api", cartRoutes);
 app.use("/api", paymentRoutes);
+app.use("/api", historyRoutes);
 
 app.get("/auth/google", passport.authenticate("google", {
   scope: ["profile", "email"]

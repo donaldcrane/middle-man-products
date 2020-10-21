@@ -2,7 +2,6 @@ const router = require("express").Router();
 const Cart = require("../models/cart");
 const Product = require("../models/product");
 const verifyToken = require("../middlewares/verify-token");
-const { initializePayment, verifyPayment } = require('../helper/paystack');
 
 
 /* Get Cart */
