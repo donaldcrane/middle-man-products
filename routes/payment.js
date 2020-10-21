@@ -8,9 +8,6 @@ const { initializePayment, verifyPayment } = require('../helper/paystack');
 
 
 router.post("/paystack/pay", verifyToken, async (req, res) => {
-  console.log( req.decoded._id);
-  console.log( req.decoded);
- 
     try {
       let { price, quantity, productId } = req.body;
 
