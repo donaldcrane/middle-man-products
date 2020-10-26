@@ -32,7 +32,7 @@ module.exports = function (passport) {
                         password: profile.id,
                         role: 'User'
                       });
-                 await newUser.save()
+               const userdetails =  await newUser.save()
                     done(null, userdetails);
                 }
             

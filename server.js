@@ -81,7 +81,6 @@ app.get("/auth/google/callback",passport.authenticate("google", {
   scope: ["profile", "email"]
 }),(req,res)=>{
   res.send(req.user);
-  res.send("you reached the redirect URI");
 });
 
 app.get("/auth/logout", (req, res) => {
