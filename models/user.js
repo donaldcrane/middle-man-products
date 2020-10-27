@@ -1,5 +1,10 @@
   const mongoose = require("mongoose");
   const Schema = mongoose.Schema;
+  const crypto = require('crypto');
+  const jwt = require("jsonwebtoken");
+
+  const dotenv = require("dotenv");
+  dotenv.config();
 
   const UserSchema = new Schema({
     firstName: {
@@ -27,16 +32,25 @@
       type: Schema.Types.ObjectId,
       ref: "Address",
     },
+    verified: {
+      type: Boolean,
+      default: false
+    },
     role: {
       type: String,
       enum: ['Admin', 'User'],
       default: 'User'
     },
-    date: {
+    resetPasswordToken: {
+      type: String,
+      required: false
+  },
+
+  resetPasswordExpires: {
       type: Date,
-      default: Date.now,
-    },
-  });
+      required: false
+  }
+  },{timestamps: true});
 
   UserSchema.methods.toJSON = function () {
     const user = this;
@@ -47,5 +61,21 @@
 
     return userObject;
   };
+
+  
+  UserSchema.methods.generatePasswordReset = function() {
+    let payload = {
+      id: this._id,
+      email: this.email,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      role: this.role,
+  };
+    this.resetPasswordToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+      expiresIn: 3600, // 1 hour
+    });;
+    // this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
+    this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+};
 
   module.exports = mongoose.model("User", UserSchema);
