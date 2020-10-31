@@ -69,6 +69,7 @@
       email: this.email,
       firstName: this.firstName,
       lastName: this.lastName,
+      password: this.password,
       role: this.role,
   };
     this.resetPasswordToken = jwt.sign(payload, process.env.TOKEN_SECRET, {

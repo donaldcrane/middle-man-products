@@ -232,7 +232,7 @@ router.get("/signup/verify/:email", async(req, res) => {
     if (user.verified) {
      return res.status(400).send({
         success: false,
-        message: "User already verified.....",
+        message: "oops! User already verified.....",
       });
     }
     user.verified = true
