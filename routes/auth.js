@@ -130,7 +130,7 @@ router.delete("/auth/users/:id", [verifyToken, isAdmin], async (req, res) => {
   }
 });
 /* Delete all users */
-router.delete("/auth/users", [verifyToken, isAdmin], async (req, res) => {
+router.delete("/auth/users", async (req, res) => {
   try {
     let foundUser = await User.deleteMany();
     if (foundUser) {
