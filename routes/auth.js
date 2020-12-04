@@ -38,7 +38,7 @@ router.post("/auth/signup", async (req, res) => {
       expiresIn: 604800, // 1 week
     });
     await sendVerificationEmail(Email);
-    res.cookie("auth-token", token);
+    res.cookie("auth_token", token);
     // let hostURL;
     // hostURL = "https://middle-man-products.herokuapp.com";
     // const link = `${hostURL}/api/auth/signup/verify/${email}`;
@@ -198,7 +198,7 @@ router.post("/auth/login", async (req, res) => {
         expiresIn: 604800, // 1 week
       }
     );
-    res.cookie("auth-token", token);
+    res.cookie("auth_token", token);
     res.header("authorization", token).status(201).json({
       status: true,
       token,
