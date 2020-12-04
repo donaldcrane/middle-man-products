@@ -111,7 +111,7 @@ router.get("/auth/users", [verifyToken, isAdmin], async (req, res) => {
 });
 
 /* Delete single users */
-router.delete("/auth/users/:id", async (req, res) => {
+router.delete("/auth/users/:id", [verifyToken, isAdmin], async (req, res) => {
   try {
     let foundUser = await User.deleteOne({
       _id: req.params.id,
@@ -130,7 +130,7 @@ router.delete("/auth/users/:id", async (req, res) => {
   }
 });
 /* Delete all users */
-router.delete("/auth/users", async (req, res) => {
+router.delete("/auth/users", [verifyToken, isAdmin], async (req, res) => {
   try {
     let foundUser = await User.deleteMany();
     if (foundUser) {
@@ -259,7 +259,7 @@ router.get("/signup/verify/:email", async (req, res) => {
   }
 });
 
-router.post("/auth/logout", async (req, res) => {
+router.post("/users/logout", async (req, res) => {
   res.clearCookie("auth-token");
   res.status(200).json({
     message: "loged out successfully",
@@ -267,7 +267,7 @@ router.post("/auth/logout", async (req, res) => {
 });
 
 // Logout
-router.get("/users/logout", verifyToken, async (req, res) => {
+router.get("/auth/logout", verifyToken, async (req, res) => {
   await User.findOneAndUpdate(
     { id: req.decoded._id }
     // { token: "" }
