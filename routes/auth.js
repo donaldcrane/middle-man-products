@@ -148,7 +148,7 @@ router.delete("/auth/users", [verifyToken, isAdmin], async (req, res) => {
 });
 
 /* Update profile */
-router.put("/auth/user", verifyToken, async (req, res) => {
+router.patch("/auth/user", verifyToken, async (req, res) => {
   try {
     let foundUser = await User.findOne({ _id: req.decoded._id });
 
@@ -157,7 +157,8 @@ router.put("/auth/user", verifyToken, async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     if (foundUser) {
-      if (req.body.name) foundUser.name = req.body.name;
+      if (req.body.firstName) foundUser.firstName = req.body.firstName;
+      if (req.body.lastName) foundUser.lastName = req.body.lastName;
       if (req.body.email) foundUser.email = req.body.email;
       if (req.body.password) foundUser.password = hashedPassword;
 
