@@ -1,0 +1,259 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Middle-Man-product Express API with Swagger",
+        "description": "This is a simple CRUD API application made with Express and documented with Swagger",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://middle-man-products.herokuapp.com"
+        }
+    ],
+    "securityDefinitions":{
+        "basicAuth":{
+             "type": "basic"
+        },
+       "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+        },
+        "OAuth2":{
+            "type": "oauth2",
+            "flow": "accessCode",
+            "authorizationUrl": "https://example.com/oauth/authorize",
+            "tokenUrl": "https://example.com/oauth/token"
+    },
+    "scopes":{
+        "read": "Grants read access",
+        "write": "Grants write access",
+        "admin": "Grants read and write access to administrative information"
+    }
+ },
+"security":{
+    "basicAuth": [],
+    "ApiKeyAuth":[],
+    "OAuth2": ["read", "write"]
+},
+    "tags": [
+        {
+            "name": "Products",
+            "description": "API for Products"
+        }
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "security": [],
+                "summary": "Get all products in system",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Products"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Create a new product in system",
+                "requestBody": {
+                    "description": "Product Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Product"
+                            }
+                        }
+                    }
+                },
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed. Bad post data."
+                    }
+                }
+            }
+        },
+        "/cats/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the cat that we want to match",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Cats"
+                ],
+                "summary": "Get cat with given ID",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Cat with id",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Cat"
+                        }
+                    },
+                    "404": {
+                        "description": "Failed. Cat not found."
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update cat with given ID",
+                "tags": [
+                    "Cats"
+                ],
+                "requestBody": {
+                    "description": "Cat Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Cat"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Cat with new values of properties",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Cat"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed. Bad post data."
+                    },
+                    "404": {
+                        "description": "Failed. Cat not found."
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete cat with given ID",
+                "tags": [
+                    "Cats"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Delete Cat with id",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    "404": {
+                        "description": "Failed. Cat not found."
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "id": {
+            "properties": {
+                "_id": {
+                    "type": "string"
+                }
+            }
+        },
+        
+        "Product": {
+            "type": "object",
+            "properties": {
+                "categoryID": {
+                    "type": "string"
+                },
+                "ownerID": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "photo": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "stockQuantity": {
+                    "type": "number"
+                }
+            }
+        },
+        "Products": {
+            "type": "object",
+            "properties": {
+                "products": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Product"
+                    }
+                }
+            }
+        }
+    }
+}
+

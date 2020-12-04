@@ -1,28 +1,30 @@
-  const mongoose = require("mongoose");
-  const Schema = mongoose.Schema;
-  const crypto = require('crypto');
-  const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
-  const dotenv = require("dotenv");
-  dotenv.config();
+const dotenv = require("dotenv");
+dotenv.config();
 
-  const UserSchema = new Schema({
+const UserSchema = new Schema(
+  {
     firstName: {
       type: String,
       required: true,
       min: 3,
-      max: 50 
+      max: 50,
     },
-  lastName: {
-    type: String,
-    required: true,
-    min: 3,
-    max: 50
+    lastName: {
+      type: String,
+      required: true,
+      min: 3,
+      max: 50,
     },
     email: {
       type: String,
       unique: true,
       required: true,
+      trim: true,
     },
     password: {
       type: String,
@@ -34,49 +36,50 @@
     },
     verified: {
       type: Boolean,
-      default: false
+      default: false,
     },
     role: {
       type: String,
-      enum: ['Admin', 'User'],
-      default: 'User'
+      enum: ["Admin", "User"],
+      default: "User",
     },
     resetPasswordToken: {
       type: String,
-      required: false
-  },
+      required: false,
+    },
 
-  resetPasswordExpires: {
+    resetPasswordExpires: {
       type: Date,
-      required: false
-  }
-  },{timestamps: true});
+      required: false,
+    },
+  },
+  { timestamps: true }
+);
 
-  UserSchema.methods.toJSON = function () {
-    const user = this;
+UserSchema.methods.toJSON = function () {
+  const user = this;
 
-    const userObject = user.toObject();
+  const userObject = user.toObject();
 
-    delete userObject.password;
+  delete userObject.password;
 
-    return userObject;
-  };
-
-  
-  UserSchema.methods.generatePasswordReset = function() {
-    let payload = {
-      id: this._id,
-      email: this.email,
-      firstName: this.firstName,
-      lastName: this.lastName,
-      password: this.password,
-      role: this.role,
-  };
-    this.resetPasswordToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-      expiresIn: 3600, // 1 hour
-    });;
-    // this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
-    this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+  return userObject;
 };
 
-  module.exports = mongoose.model("User", UserSchema);
+UserSchema.methods.generatePasswordReset = function () {
+  let payload = {
+    id: this._id,
+    email: this.email,
+    firstName: this.firstName,
+    lastName: this.lastName,
+    password: this.password,
+    role: this.role,
+  };
+  this.resetPasswordToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+    expiresIn: 3600, // 1 hour
+  });
+  // this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
+  this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+};
+
+module.exports = mongoose.model("User", UserSchema);

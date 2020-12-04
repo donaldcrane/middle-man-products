@@ -16,6 +16,11 @@ const ProductSchema = new Schema(
     photo: String,
     price: Number,
     stockQuantity: { type: Number, default: 1 },
+    sold: {
+      type: Number,
+      maxlength: 255,
+      default: 0,
+    },
     //store the id of the newly created Review
     reviews: [
       {
@@ -24,6 +29,7 @@ const ProductSchema = new Schema(
       },
     ],
   },
+  { timestamps: true },
   {
     toObject: { virtuals: true },
     toJSON: { virtuals: true },

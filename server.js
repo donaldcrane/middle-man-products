@@ -1,11 +1,15 @@
 const express = require("express");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const passport = require("passport");
 const cookieSession = require("cookie-session");
-require("./passport/google-passport")(passport)
+require("./passport/google-passport")(passport);
+const swaggerDocument = require("./swagger.json");
 
 dotenv.config();
 
@@ -32,11 +36,13 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieSession({
-  maxAge: 24 * 60 * 60 * 1000,
-  keys: process.env.COOKIE_KEY
-
-}));
+app.use(cookieParser());
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: process.env.COOKIE_KEY,
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -47,11 +53,18 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findById(id).then(user => {
+  User.findById(id).then((user) => {
     console.log("user deserial", user);
     done(null, user);
   });
 });
+
+// swagger setUp
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, { explorer: true })
+);
 
 const productRoutes = require("./routes/product");
 const categoryRoutes = require("./routes/category");
@@ -60,9 +73,9 @@ const userRoutes = require("./routes/auth");
 const reviewRoutes = require("./routes/review");
 const addressRoutes = require("./routes/address");
 const cartRoutes = require("./routes/cart");
-const paymentRoutes = require("./routes/payment")
-const historyRoutes = require("./routes/history")
-const passwordRoutes = require("./routes/password")
+const paymentRoutes = require("./routes/payment");
+const historyRoutes = require("./routes/history");
+const passwordRoutes = require("./routes/password");
 
 app.use("/api", productRoutes);
 app.use("/api", categoryRoutes);
@@ -75,15 +88,22 @@ app.use("/api", paymentRoutes);
 app.use("/api", historyRoutes);
 app.use("/api", passwordRoutes);
 
-app.get("/auth/google", passport.authenticate("google", {
-  scope: ["profile", "email"]
-}));
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
 
-app.get("/auth/google/callback",passport.authenticate("google", {
-  scope: ["profile", "email"]
-}),(req,res)=>{
-  res.send(req.user);
-});
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  }),
+  (req, res) => {
+    res.send(req.user);
+  }
+);
 
 app.get("/auth/logout", (req, res) => {
   req.logout();

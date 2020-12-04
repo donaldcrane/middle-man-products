@@ -4,8 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middlewares/verify-token");
 const isAdmin = require("../middlewares/isAdmin");
-const sendVerificationEmail= require("./../helper/sendgrid");
-const sgMail = require('@sendgrid/mail');
+const sendVerificationEmail = require("./../helper/sendgrid");
+const sgMail = require("@sendgrid/mail");
 const dotenv = require("dotenv");
 dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -20,11 +20,11 @@ router.post("/auth/signup", async (req, res) => {
         message: "Email already exists",
       });
     }
-  
+
     // Hash passwords
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-  
+
     // Create a new User
     const user = new User({
       firstName: req.body.firstName,
@@ -38,6 +38,7 @@ router.post("/auth/signup", async (req, res) => {
       expiresIn: 604800, // 1 week
     });
     await sendVerificationEmail(Email);
+    res.cookie("auth-token", token);
     // let hostURL;
     // hostURL = "https://middle-man-products.herokuapp.com";
     // const link = `${hostURL}/api/auth/signup/verify/${email}`;
@@ -47,13 +48,13 @@ router.post("/auth/signup", async (req, res) => {
     //   subject: "Welcome to Middle-Man-Products! Confirm Your Email",
     //   html : `<strong>Please click the following link to confirm your email address: </strong> <a href="${link}" style ="text-decoration: none; margin: 3px; padding: 5px 7px; color: black; background-color: rgb(103, 238, 114); border-radius: 3px; font-weight: bold;">VERIFY ME</a>`
     // };
-    
+
     // //ES6
     // sgMail
     //   .send(msg)
     //   .then(() => {}, error => {
     //     console.error(error);
-     
+
     //     if (error.response) {
     //       console.error(error.response.body)
     //     }
@@ -190,9 +191,14 @@ router.post("/auth/login", async (req, res) => {
 
   // Create and assign token
   if (match) {
-    const token = jwt.sign({ _id: user._id, email: user.email, role: user.role }, process.env.TOKEN_SECRET, {
-      expiresIn: 604800, // 1 week
-    });
+    const token = jwt.sign(
+      { _id: user._id, email: user.email, role: user.role },
+      process.env.TOKEN_SECRET,
+      {
+        expiresIn: 604800, // 1 week
+      }
+    );
+    res.cookie("auth-token", token);
     res.header("authorization", token).status(201).json({
       status: true,
       token,
@@ -214,33 +220,35 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
-
-router.get("/signup/verify/:email", async(req, res) => {
+router.get("/signup/verify/:email", async (req, res) => {
   try {
-    const { email } = req.params
-    
-    const user = await User.findOne({ email })
+    const { email } = req.params;
+
+    const user = await User.findOne({ email });
     console.log("user token", user);
-    const update = await User.findOneAndUpdate({
-      email
-    },{$set:
+    const update = await User.findOneAndUpdate(
       {
-        verified:true
+        email,
+      },
+      {
+        $set: {
+          verified: true,
+        },
       }
-    })
+    );
     console.log("update", update);
     if (user.verified) {
-     return res.status(400).send({
+      return res.status(400).send({
         success: false,
         message: "oops! User already verified.....",
       });
     }
-    user.verified = true
+    user.verified = true;
     console.log("verified", user);
-    await user.save()
+    await user.save();
     return res.status(200).send({
       success: true,
-      message:"The account has been verified. Please log in.",
+      message: "The account has been verified. Please log in.",
     });
   } catch (error) {
     console.log("error", error);
@@ -249,6 +257,25 @@ router.get("/signup/verify/:email", async(req, res) => {
       message: error.message,
     });
   }
-})
+});
 
+router.post("/auth/logout", async (req, res) => {
+  res.clearCookie("auth-token");
+  res.status(200).json({
+    message: "loged out successfully",
+  });
+});
+
+// Logout
+router.get("/users/logout", verifyToken, async (req, res) => {
+  await User.findOneAndUpdate(
+    { id: req.decoded._id }
+    // { token: "" }
+  );
+  res.clearCookie("auth_token");
+  res.status(200).json({
+    status: true,
+    message: "log out successfully",
+  });
+});
 module.exports = router;
