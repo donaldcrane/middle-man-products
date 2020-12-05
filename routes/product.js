@@ -8,7 +8,7 @@ router.post("/products", upload.single("photo"), async (req, res) => {
   try {
     let product = new Product();
     product.categoryID = req.body.categoryID;
-    product.ownerID = req.body.ownerID;
+    // product.ownerID = req.body.ownerID;
     product.title = req.body.title;
     product.description = req.body.description;
     product.photo = req.file.location;
@@ -46,7 +46,8 @@ router.get("/products", async (req, res) => {
     let products = await Product.find(search, { __v: 0 })
       .limit(limit * 1)
       .skip((page - 1) * limit)
-      .populate("owner category")
+      .populate("category")
+      // .populate("owner")
       .populate("reviews", "rating")
       .collation({ locale: "en" })
       .sort({ title: 1 })
@@ -71,7 +72,8 @@ router.get("/products", async (req, res) => {
 router.get("/products/:id", async (req, res) => {
   try {
     let product = await Product.findOne({ _id: req.params.id })
-      .populate("owner category")
+      .populate("category")
+      // .populate("owner")
       .populate("reviews", "rating")
       .exec();
     res.json({
@@ -99,7 +101,7 @@ router.put("/products/:id", upload.single("photo"), async (req, res) => {
           photo: req.file.location,
           price: req.body.price,
           description: req.body.description,
-          owner: req.body.ownerID,
+          // owner: req.body.ownerID,
           stockQuantity: req.body.stockQuantity,
         },
       },

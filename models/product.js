@@ -7,10 +7,10 @@ const ProductSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Category",
     },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "Owner",
-    },
+    // owner: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Owner",
+    // },
     title: String,
     description: String,
     photo: String,
