@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const Product = require("../models/product");
 const upload = require("../middlewares/upload-photo");
+const verifyToken = require("../middlewares/verify-token");
+const isAdmin = require("../middlewares/isAdmin");
 
 router.post("/products", upload.single("photo"), async (req, res) => {
   try {
@@ -46,8 +48,8 @@ router.get("/products", async (req, res) => {
       .skip((page - 1) * limit)
       .populate("owner category")
       .populate("reviews", "rating")
-      .collation({locale: "en" })
-      .sort({"title": 1})
+      .collation({ locale: "en" })
+      .sort({ title: 1 })
       .exec();
 
     // return response with products, total pages, and current page
@@ -137,25 +139,42 @@ router.delete("/products/:id", upload.single("photo"), async (req, res) => {
   }
 });
 
+/* Delete all users */
+router.delete("/products", [verifyToken, isAdmin], async (req, res) => {
+  try {
+    let foundProduct = await Product.deleteMany();
+    if (foundProduct) {
+      res.json({
+        success: true,
+        product: foundProduct,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // Total price of each product in the database
 router.get("/totalprice/products", async (req, res) => {
   try {
-  
-    let products = await Product.find({ __v: 0 })
-      console.log("products", products);
+    let products = await Product.find({ __v: 0 });
+    console.log("products", products);
     let result = products.reduce((acc, c) => {
-        console.log( acc );
-        console.log(c.title);
-      acc[c.title] = (acc[c.title] || 0) + c.price
-      return acc
-    }, {})
-    console.log("result count" ,result)
+      console.log(acc);
+      console.log(c.title);
+      acc[c.title] = (acc[c.title] || 0) + c.price;
+      return acc;
+    }, {});
+    console.log("result count", result);
 
     // return response with products, total pages, and current page
     res.json({
       success: true,
       products,
-      totalPrice: result
+      totalPrice: result,
     });
   } catch (error) {
     res.status(500).json({
