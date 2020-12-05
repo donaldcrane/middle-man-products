@@ -1,7 +1,9 @@
 const router = require("express").Router();
 const Category = require("../models/category");
+const verifyToken = require("../middlewares/verify-token");
+const isAdmin = require("../middlewares/isAdmin");
 
-router.post("/categories", async (req, res) => {
+router.post("/categories", [verifyToken, isAdmin], async (req, res) => {
   try {
     const category = new Category();
     category.type = req.body.type;

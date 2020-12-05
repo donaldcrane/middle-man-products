@@ -4,30 +4,35 @@ const upload = require("../middlewares/upload-photo");
 const verifyToken = require("../middlewares/verify-token");
 const isAdmin = require("../middlewares/isAdmin");
 
-router.post("/products", upload.single("photo"), async (req, res) => {
-  try {
-    let product = new Product();
-    product.categoryID = req.body.categoryID;
-    // product.ownerID = req.body.ownerID;
-    product.title = req.body.title;
-    product.description = req.body.description;
-    product.photo = req.file.location;
-    product.price = req.body.price;
-    product.stockQuantity = req.body.stockQuantity;
+router.post(
+  "/products",
+  upload.single("photo"),
+  [verifyToken, isAdmin],
+  async (req, res) => {
+    try {
+      let product = new Product();
+      product.category = req.body.category;
+      // product.ownerID = req.body.ownerID;
+      product.title = req.body.title;
+      product.description = req.body.description;
+      product.photo = req.file.location;
+      product.price = req.body.price;
+      product.stockQuantity = req.body.stockQuantity;
 
-    await product.save();
-    res.json({
-      product,
-      status: true,
-      message: "Successfully saved",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+      await product.save();
+      res.json({
+        product,
+        status: true,
+        message: "Successfully saved",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
   }
-});
+);
 
 router.get("/products", async (req, res) => {
   try {
