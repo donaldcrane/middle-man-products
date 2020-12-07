@@ -149,7 +149,7 @@ router.delete("/cart/:prodctId", async (req, res) => {
 });
 
 /* Delete all users */
-router.delete("/cart", [verifyToken, isAdmin], async (req, res) => {
+router.delete("/cart", async (req, res) => {
   try {
     let foundCart = await Cart.deleteMany();
     if (foundCart) {
