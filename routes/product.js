@@ -127,24 +127,29 @@ router.put("/products/:id", upload.single("photo"), async (req, res) => {
   }
 });
 
-router.delete("/products/:id", upload.single("photo"), async (req, res) => {
-  try {
-    let deleteProduct = await Product.findOneAndDelete({
-      _id: req.params.id,
-    });
-    if (deleteProduct) {
-      res.json({
-        status: true,
-        message: "Successfully deleted",
+router.delete(
+  "/products/:id",
+  [verifyToken, isAdmin],
+  upload.single("photo"),
+  async (req, res) => {
+    try {
+      let deleteProduct = await Product.findOneAndDelete({
+        _id: req.params.id,
+      });
+      if (deleteProduct) {
+        res.json({
+          status: true,
+          message: "Successfully deleted",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
       });
     }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
   }
-});
+);
 
 /* Delete all users */
 router.delete("/products", [verifyToken, isAdmin], async (req, res) => {
