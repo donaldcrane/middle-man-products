@@ -152,10 +152,10 @@ router.delete("/cart/:prodctId", async (req, res) => {
 router.delete("/cart", [verifyToken, isAdmin], async (req, res) => {
   try {
     let foundCart = await Cart.deleteMany();
-    if (foundProduct) {
+    if (foundCart) {
       res.json({
         success: true,
-        product: foundCart,
+        cart: foundCart,
       });
     }
   } catch (error) {
