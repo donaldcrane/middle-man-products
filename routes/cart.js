@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Cart = require("../models/cart");
 const Product = require("../models/product");
 const verifyToken = require("../middlewares/verify-token");
+const isAdmin = require("../middlewares/isAdmin");
 
 /* Get Cart */
 router.get("/cart", async (req, res) => {
@@ -62,7 +63,7 @@ router.post("/cart", verifyToken, async (req, res) => {
             .reduce((acc, next) => acc + next);
         }
       } else if (itemIndex !== -1) {
-      /* Check if product exist, just add the previous quantity with the new quantity and update the total price */
+        /* Check if product exist, just add the previous quantity with the new quantity and update the total price */
         cart.items[itemIndex].quantity =
           cart.items[itemIndex].quantity + quantity;
         cart.items[itemIndex].total =
@@ -72,7 +73,7 @@ router.post("/cart", verifyToken, async (req, res) => {
           .map((item) => item.total)
           .reduce((acc, next) => acc + next);
       } else if (quantity > 0) {
-      /* Check if quantity is greater than 0 then add item to items array */
+        /* Check if quantity is greater than 0 then add item to items array */
         cart.items.push({
           productId: productId,
           quantity: quantity,
@@ -83,7 +84,7 @@ router.post("/cart", verifyToken, async (req, res) => {
           .map((item) => item.total)
           .reduce((acc, next) => acc + next);
       } else {
-      /* If quantity of price is 0 throw the error */
+        /* If quantity of price is 0 throw the error */
         return res.status(400).json({
           status: fasle,
           message: "Invalid request! Quantity of price can't zero...",
@@ -96,7 +97,7 @@ router.post("/cart", verifyToken, async (req, res) => {
         data: data,
       });
     } else {
-    /* This creates a new cart and then adds the item to the cart that has been created */
+      /* This creates a new cart and then adds the item to the cart that has been created */
       const cartData = {
         items: [
           {
