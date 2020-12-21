@@ -22,7 +22,7 @@ router.post("/auth/recover", async (req, res) => {
     let hostURL = "https://middle-man-products.herokuapp.com";
     //   let hostURL = `http://localhost:${process.env.PORT || 3000}`
     await user.save();
-    const link = `${hostURL}/api/auth/reset/${user.id}-${user.resetPasswordToken}`;
+    const link = `${hostURL}/api/auth/reset/${user._id}-${user.resetPasswordToken}`;
 
     const mailOptions = {
       to: user.email,
@@ -99,6 +99,7 @@ router.post("/auth/reset/:id-:token", async (req, res) => {
         console.log("error", error);
       });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: error.message,
